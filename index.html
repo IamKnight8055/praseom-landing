@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Praseom | Bioelectronic Semiconductor Tech</title>
+    <title>Project Praseom | ISM Silicon Pipeline</title>
     <style>
         :root {
-            --bg-color: #03050c;
-            --card-bg: rgba(11, 15, 28, 0.65);
-            --accent-blue: #0ea5e9;
-            --accent-glow: rgba(14, 165, 233, 0.15);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border: rgba(30, 41, 59, 0.8);
-            --terminal-bg: #070a14;
+            --pcb-bg: #0d1117;
+            --pcb-grid: #1f2937;
+            --die-resin: #161b22;
+            --copper-gold: #fbbf24;
+            --copper-glow: rgba(251, 191, 36, 0.2);
+            --solder-mask: #047857;
+            --silkscreen: #e2e8f0;
+            --silkscreen-dim: #64748b;
+            --terminal-bg: #000000;
+            --uart-green: #34d399;
         }
 
         * {
@@ -23,447 +25,442 @@
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--pcb-bg);
+            /* EDA Tool Dot Grid */
+            background-image: radial-gradient(var(--pcb-grid) 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: var(--silkscreen);
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
             line-height: 1.6;
             overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Interactive Canvas Background */
-        #lattice-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.4;
         }
 
         .wrapper {
-            max-width: 1000px;
+            max-width: 1040px;
             margin: 0 auto;
             padding: 80px 24px;
-            position: relative;
-            z-index: 1;
         }
 
+        /* Silkscreen Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 80px;
+            border-bottom: 2px solid var(--pcb-grid);
+            padding-bottom: 20px;
         }
 
         .brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.3em;
+            color: var(--silkscreen);
+        }
+
+        .brand span {
+            color: var(--copper-gold);
         }
 
         .status-pill {
-            background: rgba(14, 165, 233, 0.08);
-            border: 1px solid rgba(14, 165, 233, 0.25);
-            color: var(--accent-blue);
-            padding: 6px 16px;
-            border-radius: 9999px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            box-shadow: 0 0 15px var(--accent-glow);
+            background: var(--die-resin);
+            border: 1px solid var(--copper-gold);
+            color: var(--copper-gold);
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px var(--copper-glow);
         }
 
+        /* Hero Section */
         .hero {
             margin-bottom: 100px;
         }
 
         .hero h1 {
-            font-size: 3.8rem;
-            line-height: 1.15;
-            font-weight: 800;
-            letter-spacing: -0.03em;
+            font-size: 2.8rem;
+            line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: -0.05em;
             margin-bottom: 24px;
-            background: linear-gradient(to right, #ffffff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            color: #ffffff;
         }
 
         .hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 720px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1.2rem;
+            color: var(--silkscreen-dim);
+            max-width: 760px;
             margin-bottom: 40px;
         }
 
+        /* Tactile Mechanical Button */
         .cta-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
-            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+            color: var(--copper-gold);
             text-decoration: none;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-weight: 600;
+            padding: 16px 36px;
+            border-radius: 4px; /* Hardware square look */
+            font-weight: 700;
             font-size: 1rem;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.25);
-            border: 1px solid rgba(255,255,255,0.1);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1px solid #475569;
+            /* 3D Mechanical Depth */
+            box-shadow: 0 6px 0 #0f172a, 0 10px 20px rgba(0,0,0,0.5);
+            transition: all 0.1s ease; /* Fast transition for snappy hardware feel */
+            cursor: pointer;
         }
 
         .cta-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+            background: linear-gradient(180deg, #475569 0%, #334155 100%);
+            box-shadow: 0 6px 0 #0f172a, 0 10px 25px var(--copper-glow);
         }
 
-        /* Interactive Firmware Terminal Section */
+        /* The "Touchy" Depress Action */
+        .cta-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 #0f172a, 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* UART Terminal Simulator */
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--silkscreen-dim);
+            margin-bottom: 24px;
+        }
+
         .terminal-container {
             background-color: var(--terminal-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            border: 2px solid #334155;
+            border-radius: 4px;
+            padding: 24px;
             margin-bottom: 100px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 15px 30px rgba(0,0,0,0.6);
             position: relative;
-            backdrop-filter: blur(8px);
+        }
+
+        .terminal-container::after {
+            /* Scanline effect */
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
         }
 
         .terminal-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 12px;
             margin-bottom: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 10px;
         }
 
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot-r { background-color: #ef4444; }
-        .dot-y { background-color: #eab308; }
-        .dot-g { background-color: #22c55e; }
-        .terminal-title { font-size: 0.8rem; color: var(--text-secondary); margin-left: 8px; letter-spacing: 0.05em;}
+        .terminal-title { 
+            font-size: 0.75rem; 
+            color: var(--silkscreen-dim); 
+            text-transform: uppercase;
+        }
+
+        .baud-rate {
+            color: var(--copper-gold);
+            font-size: 0.75rem;
+        }
 
         .terminal-body {
             height: 180px;
             overflow-y: hidden;
             font-size: 0.85rem;
-            color: #34d399; /* Terminal green */
-            line-height: 1.5;
+            color: var(--uart-green);
+            text-shadow: 0 0 5px rgba(52, 211, 153, 0.5);
         }
 
-        .term-ln { margin-bottom: 4px; opacity: 0.9; }
-        .term-accent { color: var(--accent-blue); }
-        .term-warn { color: #f59e0b; }
-
-        /* Core Architecture Cards */
-        .section-title {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: var(--accent-blue);
-            margin-bottom: 32px;
+        .term-ln { margin-bottom: 4px; }
+        .term-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background-color: var(--uart-green);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 4px;
         }
 
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Silicon Die Architecture Cards */
         .architecture-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
             margin-bottom: 100px;
         }
 
         .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
+            background-color: var(--die-resin);
+            border: 2px solid var(--pcb-grid);
             padding: 32px;
-            border-radius: 12px;
-            backdrop-filter: blur(12px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 2px;
+            position: relative;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
+        /* Gold Pad Traces on Cards */
+        .card::before {
+            content: '';
+            position: absolute;
+            left: -2px; 
+            top: 20px; 
+            bottom: 20px; 
+            width: 4px;
+            background: var(--copper-gold);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
         .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-blue);
-            box-shadow: 0 10px 30px var(--accent-glow);
+            border-color: #334155;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background-color: #1e2532;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+            box-shadow: 0 0 12px var(--copper-gold);
+        }
+
+        /* Silkscreen Ref Des */
+        .ref-des {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.7rem;
+            color: var(--silkscreen-dim);
+            letter-spacing: 0.1em;
         }
 
         .card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 12px;
-            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: var(--silkscreen);
+            text-transform: uppercase;
         }
 
         .card p {
-            color: var(--text-secondary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--silkscreen-dim);
             font-size: 0.95rem;
         }
 
-        /* Timeline Pipeline */
+        /* Hardware Pipeline (Trace Routing) */
         .pipeline {
             margin-bottom: 100px;
         }
 
         .timeline-item {
             display: flex;
-            border-left: 2px solid var(--border);
+            border-left: 2px solid var(--pcb-grid);
             padding-left: 32px;
-            margin-left: 8px;
+            margin-left: 10px;
             position: relative;
-            padding-bottom: 40px;
+            padding-bottom: 48px;
         }
 
+        /* Via Holes */
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -6px;
+            left: -8px;
             top: 0;
-            width: 10px;
-            height: 10px;
-            background-color: var(--bg-color);
-            border: 2px solid var(--accent-blue);
+            width: 14px;
+            height: 14px;
+            background-color: var(--pcb-bg);
+            border: 3px solid var(--pcb-grid);
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
+        /* Active Gold Trace Via */
+        .timeline-item.active {
+            border-left: 2px solid var(--copper-gold);
+        }
+        
         .timeline-item.active::before {
-            background-color: var(--accent-blue);
-            box-shadow: 0 0 15px var(--accent-blue);
+            border-color: var(--copper-gold);
+            background-color: var(--copper-gold);
+            box-shadow: 0 0 10px var(--copper-gold);
         }
 
         .timeline-meta {
-            min-width: 120px;
-            font-size: 0.85rem;
+            min-width: 140px;
+            font-size: 0.8rem;
             font-weight: 700;
-            color: var(--text-secondary);
+            color: var(--copper-gold);
             text-transform: uppercase;
             padding-top: 2px;
         }
 
         .timeline-content h4 {
-            font-size: 1.15rem;
-            color: #fff;
-            margin-bottom: 4px;
+            font-size: 1.1rem;
+            color: var(--silkscreen);
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
         .timeline-content p {
-            color: var(--text-secondary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--silkscreen-dim);
             font-size: 0.95rem;
         }
 
         footer {
-            border-top: 1px solid var(--border);
-            padding-top: 40px;
+            border-top: 2px solid var(--pcb-grid);
+            padding-top: 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            font-size: 0.75rem;
+            color: var(--silkscreen-dim);
+            text-transform: uppercase;
         }
 
         footer a {
-            color: var(--accent-blue);
+            color: var(--copper-gold);
             text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.6rem; }
-            .timeline-item { flex-direction: column; gap: 8px; }
+            .hero h1 { font-size: 2rem; }
+            .timeline-item { flex-direction: column; gap: 12px; }
             footer { flex-direction: column; gap: 16px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Ion Lattice Background Canvas -->
-    <canvas id="lattice-canvas"></canvas>
-
     <div class="wrapper">
         <header>
-            <div class="brand">Praseom</div>
-            <div class="status-pill">ISM 2.0 Pipeline // Stealth</div>
+            <div class="brand">PRASEOM<span>_</span></div>
+            <div class="status-pill">HW_REV A.01</div>
         </header>
 
         <section class="hero">
-            <h1>Bridging the gap between biological signals and solid-state silicon.</h1>
-            <p>Project Praseom is developing next-generation wearable bioelectronic interfaces. By integrating advanced electrochemistry with custom analog microelectronics, we are establishing continuous, non-invasive telemetry profiles for critical physiological analytes.</p>
-            <a href="mailto:pranjal@praseom.xyz" class="cta-btn">Initiate Inquiries</a>
+            <h1>Bio-to-Silicon<br>Signal Translation.</h1>
+            <p>Project Praseom develops continuous, non-invasive interstitial fluid telemetry profiles via valinomycin transduction and ultra-low-noise custom analog microelectronics.</p>
+            <a href="mailto:pranjal@praseom.xyz" class="cta-btn">Initialize Protocol</a>
         </section>
 
-        <!-- Live Core Firmware Monitor -->
-        <h2 class="section-title">Telemetry & Core Diagnostics Console</h2>
+        <!-- UART Debug Console -->
+        <h2 class="section-title">UART / Core Debug Monitor</h2>
         <section class="terminal-container">
             <div class="terminal-header">
-                <div class="dot dot-r"></div>
-                <div class="dot dot-y"></div>
-                <div class="dot dot-g"></div>
-                <div class="terminal-title">PRASEOM_CORE_NODE // Firmware Sim v1.0.4</div>
+                <div class="terminal-title">COM4 - PRASEOM_AFE_DEBUG</div>
+                <div class="baud-rate">BAUD: 115200 8N1</div>
             </div>
             <div class="terminal-body" id="term-body">
                 <!-- Javascript will stream firmware steps logs here -->
             </div>
         </section>
 
-        <h2 class="section-title">Core Innovation Architecture</h2>
+        <h2 class="section-title">Subsystem Schematics</h2>
         <section class="architecture-grid">
             <div class="card">
-                <h3>01 / Transduction</h3>
-                <p>High-selectivity microneedle skin patches optimized for continuous interstitial fluid (ISF) sampling using a valinomycin carrier interface matrix.</p>
+                <div class="ref-des">U1</div>
+                <h3>Transduction Matrix</h3>
+                <p>Valinomycin carrier interface embedded in high-selectivity microneedle arrays. Engineered for passive ISF ionic extraction.</p>
             </div>
             <div class="card">
-                <h3>02 / Mixed-Signal AFE</h3>
-                <p>Custom ultra-low-noise chopper-stabilized instrumentation architectures engineered to suppress baseband 1/f noise and maximize signal accuracy.</p>
+                <div class="ref-des">U2</div>
+                <h3>Analog Front-End</h3>
+                <p>Chopper-stabilized topology suppressing 1/f flicker noise. Designed to interface directly with gigohm-level membrane impedances.</p>
             </div>
             <div class="card">
-                <h3>03 / Edge Compute</h3>
-                <p>Bare-metal low-power firmware stack designed for real-time trend analytics, adaptive stabilization, and deterministic execution profiles.</p>
+                <div class="ref-des">U3</div>
+                <h3>Edge Telemetry</h3>
+                <p>Bare-metal low-power logic mapping analog drift into serialized deterministic data streams for external transmission.</p>
             </div>
         </section>
 
-        <h2 class="section-title">Development Pipeline</h2>
+        <h2 class="section-title">Tape-Out Routing</h2>
         <section class="pipeline">
             <div class="timeline-item active">
-                <div class="timeline-meta">Months 1—3</div>
+                <div class="timeline-meta">TRC_01 [M1-M3]</div>
                 <div class="timeline-content">
-                    <h4>Phase 1: Benchtop Verification</h4>
-                    <p>Current stage. Development of the analytical electrochemical sensor model and hardware beaker testing of the core analog signal chain.</p>
+                    <h4>Benchtop Verification</h4>
+                    <p>Beaker-level validation of the potentiometric Nernst cell macro-model. Signal chain discrete prototype routing.</p>
                 </div>
             </div>
             <div class="timeline-item">
-                <div class="timeline-meta">Months 4—8</div>
+                <div class="timeline-meta">TRC_02 [M4-M8]</div>
                 <div class="timeline-content">
-                    <h4>Phase 2: Silicon Design & Tape-Out</h4>
-                    <p>Schematic optimization and layout synthesis targeting the India Semiconductor Mission fabrication pipelines.</p>
+                    <h4>Silicon Synthesis</h4>
+                    <p>IC schematic capture, layout, and parasitic extraction targeting local Indian fab pipelines.</p>
                 </div>
             </div>
             <div class="timeline-item">
-                <div class="timeline-meta">Months 9+</div>
+                <div class="timeline-meta">TRC_03 [M9+]</div>
                 <div class="timeline-content">
-                    <h4>Phase 3: In-Vitro Validation</h4>
-                    <p>Integration of physical sensor patches with local edge silicon nodes for real-world clinical data comparison loops.</p>
+                    <h4>Clinical Loop</h4>
+                    <p>Integration of biological skin patch arrays with local ASIC edge nodes for raw human-in-the-loop telemetry.</p>
                 </div>
             </div>
         </section>
 
         <footer>
-            <div>&copy; 2026 Project Praseom. All rights reserved. // Designed in India</div>
-            <div>Inquiries: <a href="mailto:pranjal@praseom.xyz">pranjal@praseom.xyz</a></div>
+            <div>ASIC LAYOUT: PROJECT PRASEOM // IN</div>
+            <div>NETLIST: <a href="mailto:pranjal@praseom.xyz">pranjal@praseom.xyz</a></div>
         </footer>
     </div>
 
     <script>
-        // --- PARTICLE LATTICE CANVAS ANIMATION ---
-        const canvas = document.getElementById('lattice-canvas');
-        const ctx = canvas.getContext('2d');
-
-        let particles = [];
-        const properties = {
-            count: 45,
-            velocity: 0.3,
-            lineLength: 130,
-            particleRadius: 2.5
-        };
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * properties.velocity;
-                this.vy = (Math.random() - 0.5) * properties.velocity;
-            }
-            move() {
-                this.x += this.vx;
-                this.y += this.vy;
-                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, properties.particleRadius, 0, Math.PI * 2);
-                ctx.fillStyle = '#0ea5e9';
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            particles = [];
-            for (let i = 0; i < properties.count; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        function drawLines() {
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-                    if (dist < properties.lineLength) {
-                        const alpha = 1 - (dist / properties.lineLength);
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(14, 165, 233, ${alpha * 0.25})`;
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-
-        function loop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.move(); p.draw(); });
-            drawLines();
-            requestAnimationFrame(loop);
-        }
-        initParticles();
-        loop();
-
-
-        // --- LIVE FIRMWARE LOGGER SIMULATION ---
+        // --- UART TERMINAL SIMULATION ---
         const terminalBody = document.getElementById('term-body');
         const logs = [
-            "[INFO] Initializing Project Praseom core stack...",
-            "[OK] Bare-metal firmware layer mapped to registers successfully.",
-            "[INFO] Core Clock configuration initialized... System Core Running at 16MHz.",
-            "[INFO] Spinning up AFE simulation matrix...",
-            "[OK] Chopper-stabilization clock loop sync configured at f_chop = 4.00 kHz.",
-            "[INFO] Interfacing ultra-high impedance macro model node (R_mem = 450 MΩ).",
-            "[WARN] Baseband 1/f flicker noise detected. Executing dynamic notch filtering.",
-            "[OK] Offset voltage correction stabilization calibration sequence complete.",
-            "[DATA] Interstitial continuous monitoring data active.",
-            "[READING] K+ Concentration Level: 4.12 mM // Drift: 0.012% // Status: Normal Nominal",
-            "[READING] K+ Concentration Level: 4.15 mM // Drift: 0.009% // Status: Normal Nominal",
-            "[READING] K+ Concentration Level: 4.09 mM // Drift: 0.015% // Status: Normal Nominal"
+            "BOOTROM: Loading Praseom Edge Stack...",
+            "SYS: Clock tree locked. Core frequency 16.00 MHz.",
+            "I2C: AFE registers initialized [ADDR: 0x4B].",
+            "AFE: Setting chopper modulation f_chop = 4.0 kHz...",
+            "AFE: Calibrating baseline offset voltage... OK (2.1mV drift corrected)",
+            "BIO: ISF transduction interface stabilized. R_mem = 450 MΩ.",
+            "CMD: START_TELEMETRY_STREAM",
+            ">> K+ LEVEL: 4.12 mM | V_OUT: 85.4 mV | STATUS: NOMINAL",
+            ">> K+ LEVEL: 4.15 mM | V_OUT: 86.1 mV | STATUS: NOMINAL",
+            ">> K+ LEVEL: 4.09 mM | V_OUT: 84.8 mV | STATUS: NOMINAL"
         ];
 
         let logIdx = 0;
 
         function addLogLine(text) {
+            // Remove existing cursor if present in the last line
+            const lastLine = terminalBody.lastElementChild;
+            if (lastLine && lastLine.querySelector('.term-cursor')) {
+                lastLine.removeChild(lastLine.querySelector('.term-cursor'));
+            }
+
             const line = document.createElement('div');
             line.className = 'term-ln';
+            line.innerHTML = text + '<span class="term-cursor"></span>';
             
-            // Syntax highlighting for logs
-            if (text.includes('[OK]')) {
-                text = text.replace('[OK]', '<span style="color: #22c55e;">[OK]</span>');
-            } else if (text.includes('[WARN]')) {
-                text = text.replace('[WARN]', '<span class="term-warn">[WARN]</span>');
-            } else if (text.includes('[DATA]') || text.includes('[READING]')) {
-                text = text.replace('[DATA]', '<span class="term-accent">[DATA]</span>')
-                           .replace('[READING]', '<span class="term-accent">[READING]</span>');
-            }
-            
-            line.innerHTML = `<span>$ </span>${text}`;
             terminalBody.appendChild(line);
             terminalBody.scrollTop = terminalBody.scrollHeight;
 
@@ -476,18 +473,16 @@
             if (logIdx < logs.length) {
                 addLogLine(logs[logIdx]);
                 logIdx++;
-                setTimeout(streamLogs, logIdx < 8 ? 800 : 1500);
+                setTimeout(streamLogs, logIdx < 7 ? 600 : 1200);
             } else {
-                // Loop simulation read values infinitely
-                const variations = (4.0 + Math.random() * 0.4).toFixed(2);
-                const drift = (Math.random() * 0.02).toFixed(3);
-                addLogLine(`[READING] K+ Concentration Level: ${variations} mM // Drift: ${drift}% // Status: Normal Nominal`);
-                setTimeout(streamLogs, 2500);
+                const k_val = (4.0 + Math.random() * 0.3).toFixed(2);
+                const v_val = (80.0 + Math.random() * 8.0).toFixed(1);
+                addLogLine(`>> K+ LEVEL: ${k_val} mM | V_OUT: ${v_val} mV | STATUS: NOMINAL`);
+                setTimeout(streamLogs, 2000);
             }
         }
         
-        // Start streaming after 500ms load
-        setTimeout(streamLogs, 500);
+        setTimeout(streamLogs, 800);
     </script>
 </body>
 </html>
