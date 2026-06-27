@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Praseom | ISM Silicon Pipeline</title>
+    <title>Project Praseom | Advanced Silicon Telemetry</title>
     <style>
         :root {
-            --pcb-bg: #0d1117;
-            --pcb-grid: #1f2937;
-            --die-resin: #161b22;
+            --bg-base: #050914;
+            --trace-dim: rgba(30, 41, 59, 0.4);
+            --trace-glow: #0ea5e9;
             --copper-gold: #fbbf24;
-            --copper-glow: rgba(251, 191, 36, 0.2);
-            --solder-mask: #047857;
-            --silkscreen: #e2e8f0;
-            --silkscreen-dim: #64748b;
-            --terminal-bg: #000000;
-            --uart-green: #34d399;
+            --ui-glass: rgba(11, 15, 25, 0.65);
+            --ui-border: rgba(30, 41, 59, 0.8);
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
         }
 
         * {
@@ -25,29 +23,48 @@
         }
 
         body {
-            background-color: var(--pcb-bg);
-            /* EDA Tool Dot Grid */
-            background-image: radial-gradient(var(--pcb-grid) 1px, transparent 1px);
-            background-size: 24px 24px;
-            color: var(--silkscreen);
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
             overflow-x: hidden;
+            /* Prevent text selection when rapid-clicking the background */
+            user-select: none; 
         }
 
+        /* --- THE PCB CANVAS --- */
+        #pcb-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            /* Allows clicking on the canvas without blocking UI interactions */
+            cursor: crosshair;
+        }
+
+        /* --- UI WRAPPER & GLASSMORPHISM --- */
         .wrapper {
-            max-width: 1040px;
+            max-width: 1080px;
             margin: 0 auto;
             padding: 80px 24px;
+            position: relative;
+            z-index: 10;
+            pointer-events: none; /* Let clicks pass through empty space */
         }
 
-        /* Silkscreen Header */
+        /* Re-enable clicks for actual UI elements */
+        header, .hero, .card, .timeline-item, footer, .terminal-container {
+            pointer-events: auto;
+        }
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 80px;
-            border-bottom: 2px solid var(--pcb-grid);
+            margin-bottom: 100px;
+            border-bottom: 1px solid var(--ui-border);
             padding-bottom: 20px;
         }
 
@@ -55,256 +72,162 @@
             font-size: 1.5rem;
             font-weight: 800;
             letter-spacing: 0.3em;
-            color: var(--silkscreen);
-        }
-
-        .brand span {
-            color: var(--copper-gold);
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
         }
 
         .status-pill {
-            background: var(--die-resin);
+            background: rgba(251, 191, 36, 0.1);
             border: 1px solid var(--copper-gold);
             color: var(--copper-gold);
-            padding: 4px 12px;
+            padding: 4px 14px;
             font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            box-shadow: 0 0 10px var(--copper-glow);
+            border-radius: 2px;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
         }
 
-        /* Hero Section */
-        .hero {
-            margin-bottom: 100px;
-        }
-
+        .hero { margin-bottom: 120px; }
+        
         .hero h1 {
-            font-size: 2.8rem;
-            line-height: 1.2;
-            font-weight: 700;
-            letter-spacing: -0.05em;
+            font-size: 3.5rem;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -0.02em;
             margin-bottom: 24px;
-            text-transform: uppercase;
-            color: #ffffff;
+            background: linear-gradient(135deg, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero p {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 1.2rem;
-            color: var(--silkscreen-dim);
-            max-width: 760px;
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
             margin-bottom: 40px;
         }
 
-        /* Tactile Mechanical Button */
+        /* Tactile Power Button */
         .cta-btn {
             display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
-            color: var(--copper-gold);
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            color: var(--trace-glow);
             text-decoration: none;
-            padding: 16px 36px;
-            border-radius: 4px; /* Hardware square look */
+            padding: 16px 40px;
+            border-radius: 4px;
             font-weight: 700;
-            font-size: 1rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            border: 1px solid #475569;
-            /* 3D Mechanical Depth */
-            box-shadow: 0 6px 0 #0f172a, 0 10px 20px rgba(0,0,0,0.5);
-            transition: all 0.1s ease; /* Fast transition for snappy hardware feel */
-            cursor: pointer;
+            border: 1px solid #334155;
+            box-shadow: 0 6px 0 #020617, 0 15px 25px rgba(0,0,0,0.6);
+            transition: all 0.1s ease;
         }
 
         .cta-btn:hover {
-            background: linear-gradient(180deg, #475569 0%, #334155 100%);
-            box-shadow: 0 6px 0 #0f172a, 0 10px 25px var(--copper-glow);
+            border-color: var(--trace-glow);
+            box-shadow: 0 6px 0 #020617, 0 15px 35px rgba(14, 165, 233, 0.3);
+            text-shadow: 0 0 10px var(--trace-glow);
         }
 
-        /* The "Touchy" Depress Action */
         .cta-btn:active {
             transform: translateY(6px);
-            box-shadow: 0 0px 0 #0f172a, 0 2px 5px rgba(0,0,0,0.5);
+            box-shadow: 0 0px 0 #020617, 0 2px 5px rgba(0,0,0,0.8);
         }
 
-        /* UART Terminal Simulator */
+        /* Glass Architecture Cards */
         .section-title {
             font-size: 0.85rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.2em;
-            color: var(--silkscreen-dim);
-            margin-bottom: 24px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
         }
 
-        .terminal-container {
-            background-color: var(--terminal-bg);
-            border: 2px solid #334155;
-            border-radius: 4px;
-            padding: 24px;
-            margin-bottom: 100px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 15px 30px rgba(0,0,0,0.6);
-            position: relative;
-        }
-
-        .terminal-container::after {
-            /* Scanline effect */
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-        }
-
-        .terminal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-
-        .terminal-title { 
-            font-size: 0.75rem; 
-            color: var(--silkscreen-dim); 
-            text-transform: uppercase;
-        }
-
-        .baud-rate {
-            color: var(--copper-gold);
-            font-size: 0.75rem;
-        }
-
-        .terminal-body {
-            height: 180px;
-            overflow-y: hidden;
-            font-size: 0.85rem;
-            color: var(--uart-green);
-            text-shadow: 0 0 5px rgba(52, 211, 153, 0.5);
-        }
-
-        .term-ln { margin-bottom: 4px; }
-        .term-cursor {
-            display: inline-block;
-            width: 8px;
-            height: 15px;
-            background-color: var(--uart-green);
-            animation: blink 1s step-end infinite;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        /* Silicon Die Architecture Cards */
         .architecture-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
-            margin-bottom: 100px;
+            margin-bottom: 120px;
         }
 
         .card {
-            background-color: var(--die-resin);
-            border: 2px solid var(--pcb-grid);
+            background: var(--ui-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--ui-border);
             padding: 32px;
-            border-radius: 2px;
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            transition: all 0.2s ease;
-            cursor: pointer;
+            overflow: hidden;
         }
 
-        /* Gold Pad Traces on Cards */
+        /* Card Hover Illumination */
         .card::before {
             content: '';
             position: absolute;
-            left: -2px; 
-            top: 20px; 
-            bottom: 20px; 
-            width: 4px;
-            background: var(--copper-gold);
-            opacity: 0;
-            transition: all 0.2s ease;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--trace-glow), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
         }
 
         .card:hover {
             border-color: #334155;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            background-color: #1e2532;
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(14, 165, 233, 0.1);
+            background: rgba(15, 23, 42, 0.85);
         }
 
         .card:hover::before {
-            opacity: 1;
-            box-shadow: 0 0 12px var(--copper-gold);
-        }
-
-        /* Silkscreen Ref Des */
-        .ref-des {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            font-size: 0.7rem;
-            color: var(--silkscreen-dim);
-            letter-spacing: 0.1em;
+            transform: translateX(100%);
         }
 
         .card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 16px;
-            color: var(--silkscreen);
-            text-transform: uppercase;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: #fff;
+            letter-spacing: 0.05em;
         }
 
         .card p {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: var(--silkscreen-dim);
+            color: #94a3b8;
             font-size: 0.95rem;
         }
 
-        /* Hardware Pipeline (Trace Routing) */
-        .pipeline {
-            margin-bottom: 100px;
-        }
+        /* Timeline / Routing Pipeline */
+        .pipeline { margin-bottom: 100px; }
 
         .timeline-item {
             display: flex;
-            border-left: 2px solid var(--pcb-grid);
+            border-left: 2px solid var(--ui-border);
             padding-left: 32px;
             margin-left: 10px;
             position: relative;
             padding-bottom: 48px;
         }
 
-        /* Via Holes */
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -8px;
+            left: -7px;
             top: 0;
-            width: 14px;
-            height: 14px;
-            background-color: var(--pcb-bg);
-            border: 3px solid var(--pcb-grid);
+            width: 12px;
+            height: 12px;
+            background-color: var(--bg-base);
+            border: 2px solid var(--text-muted);
             border-radius: 50%;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
-        /* Active Gold Trace Via */
-        .timeline-item.active {
-            border-left: 2px solid var(--copper-gold);
-        }
-        
+        .timeline-item.active { border-left-color: var(--copper-gold); }
         .timeline-item.active::before {
             border-color: var(--copper-gold);
             background-color: var(--copper-gold);
-            box-shadow: 0 0 10px var(--copper-gold);
+            box-shadow: 0 0 15px var(--copper-gold);
         }
 
         .timeline-meta {
@@ -312,55 +235,40 @@
             font-size: 0.8rem;
             font-weight: 700;
             color: var(--copper-gold);
-            text-transform: uppercase;
-            padding-top: 2px;
+            letter-spacing: 0.1em;
         }
 
-        .timeline-content h4 {
-            font-size: 1.1rem;
-            color: var(--silkscreen);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        .timeline-content p {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: var(--silkscreen-dim);
-            font-size: 0.95rem;
-        }
+        .timeline-content h4 { font-size: 1.1rem; color: #fff; margin-bottom: 8px; }
+        .timeline-content p { color: #94a3b8; font-size: 0.95rem; }
 
         footer {
-            border-top: 2px solid var(--pcb-grid);
+            border-top: 1px solid var(--ui-border);
             padding-top: 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 0.75rem;
-            color: var(--silkscreen-dim);
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
             text-transform: uppercase;
         }
 
-        footer a {
-            color: var(--copper-gold);
-            text-decoration: none;
-        }
+        footer a { color: var(--trace-glow); text-decoration: none; }
         
-        footer a:hover {
-            text-decoration: underline;
-        }
-
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; }
-            .timeline-item { flex-direction: column; gap: 12px; }
+            .hero h1 { font-size: 2.2rem; }
+            .timeline-item { flex-direction: column; gap: 8px; }
             footer { flex-direction: column; gap: 16px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
+    <canvas id="pcb-canvas"></canvas>
+
     <div class="wrapper">
         <header>
-            <div class="brand">PRASEOM<span>_</span></div>
+            <div class="brand">PRASEOM</div>
             <div class="status-pill">HW_REV A.01</div>
         </header>
 
@@ -370,32 +278,17 @@
             <a href="mailto:pranjal@praseom.xyz" class="cta-btn">Initialize Protocol</a>
         </section>
 
-        <!-- UART Debug Console -->
-        <h2 class="section-title">UART / Core Debug Monitor</h2>
-        <section class="terminal-container">
-            <div class="terminal-header">
-                <div class="terminal-title">COM4 - PRASEOM_AFE_DEBUG</div>
-                <div class="baud-rate">BAUD: 115200 8N1</div>
-            </div>
-            <div class="terminal-body" id="term-body">
-                <!-- Javascript will stream firmware steps logs here -->
-            </div>
-        </section>
-
         <h2 class="section-title">Subsystem Schematics</h2>
         <section class="architecture-grid">
             <div class="card">
-                <div class="ref-des">U1</div>
                 <h3>Transduction Matrix</h3>
                 <p>Valinomycin carrier interface embedded in high-selectivity microneedle arrays. Engineered for passive ISF ionic extraction.</p>
             </div>
             <div class="card">
-                <div class="ref-des">U2</div>
                 <h3>Analog Front-End</h3>
                 <p>Chopper-stabilized topology suppressing 1/f flicker noise. Designed to interface directly with gigohm-level membrane impedances.</p>
             </div>
             <div class="card">
-                <div class="ref-des">U3</div>
                 <h3>Edge Telemetry</h3>
                 <p>Bare-metal low-power logic mapping analog drift into serialized deterministic data streams for external transmission.</p>
             </div>
@@ -433,56 +326,175 @@
     </div>
 
     <script>
-        // --- UART TERMINAL SIMULATION ---
-        const terminalBody = document.getElementById('term-body');
-        const logs = [
-            "BOOTROM: Loading Praseom Edge Stack...",
-            "SYS: Clock tree locked. Core frequency 16.00 MHz.",
-            "I2C: AFE registers initialized [ADDR: 0x4B].",
-            "AFE: Setting chopper modulation f_chop = 4.0 kHz...",
-            "AFE: Calibrating baseline offset voltage... OK (2.1mV drift corrected)",
-            "BIO: ISF transduction interface stabilized. R_mem = 450 MΩ.",
-            "CMD: START_TELEMETRY_STREAM",
-            ">> K+ LEVEL: 4.12 mM | V_OUT: 85.4 mV | STATUS: NOMINAL",
-            ">> K+ LEVEL: 4.15 mM | V_OUT: 86.1 mV | STATUS: NOMINAL",
-            ">> K+ LEVEL: 4.09 mM | V_OUT: 84.8 mV | STATUS: NOMINAL"
-        ];
-
-        let logIdx = 0;
-
-        function addLogLine(text) {
-            // Remove existing cursor if present in the last line
-            const lastLine = terminalBody.lastElementChild;
-            if (lastLine && lastLine.querySelector('.term-cursor')) {
-                lastLine.removeChild(lastLine.querySelector('.term-cursor'));
-            }
-
-            const line = document.createElement('div');
-            line.className = 'term-ln';
-            line.innerHTML = text + '<span class="term-cursor"></span>';
-            
-            terminalBody.appendChild(line);
-            terminalBody.scrollTop = terminalBody.scrollHeight;
-
-            if(terminalBody.childElementCount > 8) {
-                terminalBody.removeChild(terminalBody.firstChild);
-            }
-        }
-
-        function streamLogs() {
-            if (logIdx < logs.length) {
-                addLogLine(logs[logIdx]);
-                logIdx++;
-                setTimeout(streamLogs, logIdx < 7 ? 600 : 1200);
-            } else {
-                const k_val = (4.0 + Math.random() * 0.3).toFixed(2);
-                const v_val = (80.0 + Math.random() * 8.0).toFixed(1);
-                addLogLine(`>> K+ LEVEL: ${k_val} mM | V_OUT: ${v_val} mV | STATUS: NOMINAL`);
-                setTimeout(streamLogs, 2000);
-            }
-        }
+        const canvas = document.getElementById('pcb-canvas');
+        const ctx = canvas.getContext('2d');
         
-        setTimeout(streamLogs, 800);
+        let width, height;
+        let traces = [];
+        let mouse = { x: -1000, y: -1000 };
+        let shockwaves = [];
+
+        // System Constants
+        const GRID_SIZE = 40;
+        const TRACE_DENSITY = 0.35; // % of grid populated
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            generatePCB();
+        }
+        window.addEventListener('resize', resize);
+
+        // Generate orthogonal and 45-degree PCB traces
+        function generatePCB() {
+            traces = [];
+            const cols = Math.floor(width / GRID_SIZE);
+            const rows = Math.floor(height / GRID_SIZE);
+
+            for(let i = 0; i < cols; i++) {
+                for(let j = 0; j < rows; j++) {
+                    if (Math.random() > TRACE_DENSITY) continue;
+
+                    const startX = i * GRID_SIZE + (Math.random() > 0.5 ? GRID_SIZE/2 : 0);
+                    const startY = j * GRID_SIZE + (Math.random() > 0.5 ? GRID_SIZE/2 : 0);
+                    
+                    // Routing types: 0=Horizontal, 1=Vertical, 2=Diagonal
+                    const type = Math.floor(Math.random() * 3);
+                    let endX = startX, endY = startY;
+                    const length = (Math.floor(Math.random() * 4) + 1) * GRID_SIZE;
+
+                    if (type === 0) endX += length;
+                    else if (type === 1) endY += length;
+                    else { endX += length; endY += length; }
+
+                    traces.push({
+                        x1: startX, y1: startY,
+                        x2: endX, y2: endY,
+                        length: Math.hypot(endX - startX, endY - startY)
+                    });
+                }
+            }
+        }
+
+        // Track Pointer
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+        
+        // Mobile Touch Support
+        window.addEventListener('touchmove', (e) => {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+        });
+
+        // Trigger Shockwave on Click/Tap
+        window.addEventListener('mousedown', triggerWave);
+        window.addEventListener('touchstart', triggerWave);
+
+        function triggerWave(e) {
+            let cx = e.clientX || (e.touches && e.touches[0].clientX);
+            let cy = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            shockwaves.push({
+                x: cx, y: cy,
+                radius: 0,
+                maxRadius: Math.max(width, height) * 1.5,
+                speed: 15,
+                opacity: 1
+            });
+        }
+
+        // Math helper for distance from point to line segment
+        function distToSegment(px, py, x1, y1, x2, y2) {
+            let l2 = Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2);
+            if (l2 === 0) return Math.hypot(px - x1, py - y1);
+            let t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            return Math.hypot(px - (x1 + t * (x2 - x1)), py - (y1 + t * (y2 - y1)));
+        }
+
+        function animate() {
+            // Clear background with deep dark blue/black
+            ctx.fillStyle = '#050914';
+            ctx.fillRect(0, 0, width, height);
+
+            // Update Shockwaves
+            for (let s = shockwaves.length - 1; s >= 0; s--) {
+                shockwaves[s].radius += shockwaves[s].speed;
+                shockwaves[s].speed *= 1.05; // Accelerate outward
+                shockwaves[s].opacity -= 0.015;
+                if (shockwaves[s].opacity <= 0) shockwaves.splice(s, 1);
+            }
+
+            // Draw Traces
+            traces.forEach(trace => {
+                let glowIntensity = 0;
+                let color = 'rgba(30, 41, 59, 0.4)'; // Default dim color
+                let lineWidth = 1;
+
+                // 1. Mouse Hover Calculation
+                let distToMouse = distToSegment(mouse.x, mouse.y, trace.x1, trace.y1, trace.x2, trace.y2);
+                if (distToMouse < 150) {
+                    let intensity = 1 - (distToMouse / 150);
+                    glowIntensity = Math.max(glowIntensity, intensity * 0.8);
+                }
+
+                // 2. Shockwave Collision Calculation
+                shockwaves.forEach(wave => {
+                    // Check if trace endpoints are within the expanding ring
+                    let d1 = Math.hypot(trace.x1 - wave.x, trace.y1 - wave.y);
+                    let d2 = Math.hypot(trace.x2 - wave.x, trace.y2 - wave.y);
+                    
+                    // If the wave radius is currently sweeping across the line
+                    if ((d1 < wave.radius && d1 > wave.radius - 150) || 
+                        (d2 < wave.radius && d2 > wave.radius - 150)) {
+                        let intensity = wave.opacity;
+                        glowIntensity = Math.max(glowIntensity, intensity);
+                    }
+                });
+
+                // Apply Illumination
+                if (glowIntensity > 0) {
+                    // Blend between cyan and gold based on intensity
+                    if (glowIntensity > 0.6) {
+                        color = `rgba(14, 165, 233, ${glowIntensity})`; // Cyan core
+                        ctx.shadowColor = '#0ea5e9';
+                    } else {
+                        color = `rgba(251, 191, 36, ${glowIntensity * 1.5})`; // Gold fringe
+                        ctx.shadowColor = '#fbbf24';
+                    }
+                    ctx.shadowBlur = 15 * glowIntensity;
+                    lineWidth = 1 + (2 * glowIntensity);
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+
+                // Render Copper Trace
+                ctx.beginPath();
+                ctx.moveTo(trace.x1, trace.y1);
+                ctx.lineTo(trace.x2, trace.y2);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+
+                // Draw Vias (Terminal pads) if trace is highly illuminated
+                if (glowIntensity > 0.5) {
+                    ctx.beginPath();
+                    ctx.arc(trace.x1, trace.y1, 3, 0, Math.PI * 2);
+                    ctx.arc(trace.x2, trace.y2, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = '#fff';
+                    ctx.fill();
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // Boot Sequence
+        resize();
+        animate();
     </script>
 </body>
 </html>
