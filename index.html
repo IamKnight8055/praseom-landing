@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Praseom | Next-Gen Bioelectronic Semiconductors</title>
+    <title>Project Praseom | Bioelectronic Semiconductor Tech</title>
     <style>
         :root {
-            --bg-color: #060814;
-            --card-bg: #0b0f19;
+            --bg-color: #03050c;
+            --card-bg: rgba(11, 15, 28, 0.65);
             --accent-blue: #0ea5e9;
-            --accent-green: #10b981;
+            --accent-glow: rgba(14, 165, 233, 0.15);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --border: #1e293b;
+            --border: rgba(30, 41, 59, 0.8);
+            --terminal-bg: #070a14;
         }
 
         * {
@@ -24,23 +25,37 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             line-height: 1.6;
-            padding: 0 24px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Interactive Canvas Background */
+        #lattice-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.4;
         }
 
         .wrapper {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 80px 0;
+            padding: 80px 24px;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Header Style */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 100px;
+            margin-bottom: 80px;
         }
 
         .brand {
@@ -49,31 +64,32 @@
             letter-spacing: 0.25em;
             text-transform: uppercase;
             color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
         }
 
         .status-pill {
-            background: rgba(14, 165, 233, 0.1);
-            border: 1px solid rgba(14, 165, 233, 0.3);
+            background: rgba(14, 165, 233, 0.08);
+            border: 1px solid rgba(14, 165, 233, 0.25);
             color: var(--accent-blue);
             padding: 6px 16px;
             border-radius: 9999px;
             font-size: 0.8rem;
             font-weight: 600;
             letter-spacing: 0.05em;
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        /* Hero Section */
         .hero {
-            margin-bottom: 120px;
+            margin-bottom: 100px;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             line-height: 1.15;
             font-weight: 800;
             letter-spacing: -0.03em;
             margin-bottom: 24px;
-            background: linear-gradient(to right, #ffffff, #94a3b8);
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -81,28 +97,70 @@
         .hero p {
             font-size: 1.25rem;
             color: var(--text-secondary);
-            max-width: 700px;
+            max-width: 720px;
             margin-bottom: 40px;
         }
 
         .cta-btn {
             display: inline-block;
-            background-color: var(--accent-blue);
+            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
             color: #fff;
             text-decoration: none;
-            padding: 14px 28px;
+            padding: 14px 32px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 1rem;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.25);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .cta-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
         }
 
-        /* Grid Section */
+        /* Interactive Firmware Terminal Section */
+        .terminal-container {
+            background-color: var(--terminal-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            margin-bottom: 100px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+            backdrop-filter: blur(8px);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-r { background-color: #ef4444; }
+        .dot-y { background-color: #eab308; }
+        .dot-g { background-color: #22c55e; }
+        .terminal-title { font-size: 0.8rem; color: var(--text-secondary); margin-left: 8px; letter-spacing: 0.05em;}
+
+        .terminal-body {
+            height: 180px;
+            overflow-y: hidden;
+            font-size: 0.85rem;
+            color: #34d399; /* Terminal green */
+            line-height: 1.5;
+        }
+
+        .term-ln { margin-bottom: 4px; opacity: 0.9; }
+        .term-accent { color: var(--accent-blue); }
+        .term-warn { color: #f59e0b; }
+
+        /* Core Architecture Cards */
         .section-title {
             font-size: 0.85rem;
             text-transform: uppercase;
@@ -115,7 +173,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 24px;
-            margin-bottom: 120px;
+            margin-bottom: 100px;
         }
 
         .card {
@@ -123,6 +181,15 @@
             border: 1px solid var(--border);
             padding: 32px;
             border-radius: 12px;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 30px var(--accent-glow);
         }
 
         .card h3 {
@@ -136,9 +203,9 @@
             font-size: 0.95rem;
         }
 
-        /* Timeline Section */
+        /* Timeline Pipeline */
         .pipeline {
-            margin-bottom: 120px;
+            margin-bottom: 100px;
         }
 
         .timeline-item {
@@ -160,11 +227,12 @@
             background-color: var(--bg-color);
             border: 2px solid var(--accent-blue);
             border-radius: 50%;
+            transition: all 0.3s ease;
         }
 
         .timeline-item.active::before {
             background-color: var(--accent-blue);
-            box-shadow: 0 0 12px var(--accent-blue);
+            box-shadow: 0 0 15px var(--accent-blue);
         }
 
         .timeline-meta {
@@ -187,7 +255,6 @@
             font-size: 0.95rem;
         }
 
-        /* Footer */
         footer {
             border-top: 1px solid var(--border);
             padding-top: 40px;
@@ -203,9 +270,8 @@
             text-decoration: none;
         }
 
-        /* Mobile Optimization */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
+            .hero h1 { font-size: 2.6rem; }
             .timeline-item { flex-direction: column; gap: 8px; }
             footer { flex-direction: column; gap: 16px; text-align: center; }
         }
@@ -213,10 +279,13 @@
 </head>
 <body>
 
+    <!-- Ion Lattice Background Canvas -->
+    <canvas id="lattice-canvas"></canvas>
+
     <div class="wrapper">
         <header>
             <div class="brand">Praseom</div>
-            <div class="status-pill">ISM 2.0 Pipeline / Stealth</div>
+            <div class="status-pill">ISM 2.0 Pipeline // Stealth</div>
         </header>
 
         <section class="hero">
@@ -225,15 +294,29 @@
             <a href="mailto:pranjal@praseom.xyz" class="cta-btn">Initiate Inquiries</a>
         </section>
 
+        <!-- Live Core Firmware Monitor -->
+        <h2 class="section-title">Telemetry & Core Diagnostics Console</h2>
+        <section class="terminal-container">
+            <div class="terminal-header">
+                <div class="dot dot-r"></div>
+                <div class="dot dot-y"></div>
+                <div class="dot dot-g"></div>
+                <div class="terminal-title">PRASEOM_CORE_NODE // Firmware Sim v1.0.4</div>
+            </div>
+            <div class="terminal-body" id="term-body">
+                <!-- Javascript will stream firmware steps logs here -->
+            </div>
+        </section>
+
         <h2 class="section-title">Core Innovation Architecture</h2>
         <section class="architecture-grid">
             <div class="card">
                 <h3>01 / Transduction</h3>
-                <p>High-selectivity microneedle skin patches optimized for continuous interstitial fluid (ISF) sampling without blood access.</p>
+                <p>High-selectivity microneedle skin patches optimized for continuous interstitial fluid (ISF) sampling using a valinomycin carrier interface matrix.</p>
             </div>
             <div class="card">
                 <h3>02 / Mixed-Signal AFE</h3>
-                <p>Custom ultra-low-noise chopper-stabilized instrumentation architectures engineered to suppress baseband 1/f noise and maximize signal-to-noise ratios.</p>
+                <p>Custom ultra-low-noise chopper-stabilized instrumentation architectures engineered to suppress baseband 1/f noise and maximize signal accuracy.</p>
             </div>
             <div class="card">
                 <h3>03 / Edge Compute</h3>
@@ -272,5 +355,139 @@
         </footer>
     </div>
 
+    <script>
+        // --- PARTICLE LATTICE CANVAS ANIMATION ---
+        const canvas = document.getElementById('lattice-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        const properties = {
+            count: 45,
+            velocity: 0.3,
+            lineLength: 130,
+            particleRadius: 2.5
+        };
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * properties.velocity;
+                this.vy = (Math.random() - 0.5) * properties.velocity;
+            }
+            move() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, properties.particleRadius, 0, Math.PI * 2);
+                ctx.fillStyle = '#0ea5e9';
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < properties.count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
+                    if (dist < properties.lineLength) {
+                        const alpha = 1 - (dist / properties.lineLength);
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(14, 165, 233, ${alpha * 0.25})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function loop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.move(); p.draw(); });
+            drawLines();
+            requestAnimationFrame(loop);
+        }
+        initParticles();
+        loop();
+
+
+        // --- LIVE FIRMWARE LOGGER SIMULATION ---
+        const terminalBody = document.getElementById('term-body');
+        const logs = [
+            "[INFO] Initializing Project Praseom core stack...",
+            "[OK] Bare-metal firmware layer mapped to registers successfully.",
+            "[INFO] Core Clock configuration initialized... System Core Running at 16MHz.",
+            "[INFO] Spinning up AFE simulation matrix...",
+            "[OK] Chopper-stabilization clock loop sync configured at f_chop = 4.00 kHz.",
+            "[INFO] Interfacing ultra-high impedance macro model node (R_mem = 450 MΩ).",
+            "[WARN] Baseband 1/f flicker noise detected. Executing dynamic notch filtering.",
+            "[OK] Offset voltage correction stabilization calibration sequence complete.",
+            "[DATA] Interstitial continuous monitoring data active.",
+            "[READING] K+ Concentration Level: 4.12 mM // Drift: 0.012% // Status: Normal Nominal",
+            "[READING] K+ Concentration Level: 4.15 mM // Drift: 0.009% // Status: Normal Nominal",
+            "[READING] K+ Concentration Level: 4.09 mM // Drift: 0.015% // Status: Normal Nominal"
+        ];
+
+        let logIdx = 0;
+
+        function addLogLine(text) {
+            const line = document.createElement('div');
+            line.className = 'term-ln';
+            
+            // Syntax highlighting for logs
+            if (text.includes('[OK]')) {
+                text = text.replace('[OK]', '<span style="color: #22c55e;">[OK]</span>');
+            } else if (text.includes('[WARN]')) {
+                text = text.replace('[WARN]', '<span class="term-warn">[WARN]</span>');
+            } else if (text.includes('[DATA]') || text.includes('[READING]')) {
+                text = text.replace('[DATA]', '<span class="term-accent">[DATA]</span>')
+                           .replace('[READING]', '<span class="term-accent">[READING]</span>');
+            }
+            
+            line.innerHTML = `<span>$ </span>${text}`;
+            terminalBody.appendChild(line);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+
+            if(terminalBody.childElementCount > 8) {
+                terminalBody.removeChild(terminalBody.firstChild);
+            }
+        }
+
+        function streamLogs() {
+            if (logIdx < logs.length) {
+                addLogLine(logs[logIdx]);
+                logIdx++;
+                setTimeout(streamLogs, logIdx < 8 ? 800 : 1500);
+            } else {
+                // Loop simulation read values infinitely
+                const variations = (4.0 + Math.random() * 0.4).toFixed(2);
+                const drift = (Math.random() * 0.02).toFixed(3);
+                addLogLine(`[READING] K+ Concentration Level: ${variations} mM // Drift: ${drift}% // Status: Normal Nominal`);
+                setTimeout(streamLogs, 2500);
+            }
+        }
+        
+        // Start streaming after 500ms load
+        setTimeout(streamLogs, 500);
+    </script>
 </body>
 </html>
