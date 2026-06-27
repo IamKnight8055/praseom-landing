@@ -3,76 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Praseom | Bioelectronic Semiconductor Tech</title>
+    <title>Project Praseom | Next-Gen Bioelectronic Semiconductors</title>
     <style>
-        body {
-            background-color: #0a0a0c;
-            color: #e4e4e7;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+        :root {
+            --bg-color: #060814;
+            --card-bg: #0b0f19;
+            --accent-blue: #0ea5e9;
+            --accent-green: #10b981;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #1e293b;
+        }
+
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        .container {
-            max-width: 600px;
-            text-align: center;
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            padding: 0 24px;
         }
-        .logo {
-            font-size: 1.5rem;
+
+        .wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 0;
+        }
+
+        /* Header Style */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+
+        .brand {
+            font-size: 1.25rem;
             font-weight: 700;
-            letter-spacing: 0.2em;
-            color: #38bdf8;
+            letter-spacing: 0.25em;
             text-transform: uppercase;
-            margin-bottom: 2rem;
+            color: #fff;
         }
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: -0.025em;
-            margin-bottom: 1rem;
-            color: #ffffff;
-        }
-        p {
-            font-size: 1.1rem;
-            line-height: 1.75;
-            color: #a1a1aa;
-            margin-bottom: 2.5rem;
-        }
-        .badge {
-            display: inline-block;
-            background-color: #1e293b;
-            color: #38bdf8;
+
+        .status-pill {
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            color: var(--accent-blue);
             padding: 6px 16px;
             border-radius: 9999px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            border: 1px solid #334155;
-        }
-        .footer {
-            margin-top: 3rem;
             font-size: 0.8rem;
-            color: #52525b;
+            font-weight: 600;
             letter-spacing: 0.05em;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-bottom: 120px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 40px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            background-color: var(--accent-blue);
+            color: #fff;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .cta-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Grid Section */
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent-blue);
+            margin-bottom: 32px;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 120px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 32px;
+            border-radius: 12px;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Timeline Section */
+        .pipeline {
+            margin-bottom: 120px;
+        }
+
+        .timeline-item {
+            display: flex;
+            border-left: 2px solid var(--border);
+            padding-left: 32px;
+            margin-left: 8px;
+            position: relative;
+            padding-bottom: 40px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            background-color: var(--bg-color);
+            border: 2px solid var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        .timeline-item.active::before {
+            background-color: var(--accent-blue);
+            box-shadow: 0 0 12px var(--accent-blue);
+        }
+
+        .timeline-meta {
+            min-width: 120px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            padding-top: 2px;
+        }
+
+        .timeline-content h4 {
+            font-size: 1.15rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .timeline-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .timeline-item { flex-direction: column; gap: 8px; }
+            footer { flex-direction: column; gap: 16px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo">Praseom</div>
-        <div class="badge">ISM 2.0 Pipeline // Bioelectronics Phase 1</div>
-        <h1>Bridging the gap between biological signals and solid-state silicon.</h1>
-        <p>We are developing next-generation wearable continuous interstitial fluid (ISF) analyte monitoring patches driven by custom ultra-low-noise analog front-ends.</p>
-        
-        <div class="footer">
-            &copy; 2026 Project Praseom. All rights reserved. // Stealth Mode
-        </div>
+    <div class="wrapper">
+        <header>
+            <div class="brand">Praseom</div>
+            <div class="status-pill">ISM 2.0 Pipeline / Stealth</div>
+        </header>
+
+        <section class="hero">
+            <h1>Bridging the gap between biological signals and solid-state silicon.</h1>
+            <p>Project Praseom is developing next-generation wearable bioelectronic interfaces. By integrating advanced electrochemistry with custom analog microelectronics, we are establishing continuous, non-invasive telemetry profiles for critical physiological analytes.</p>
+            <a href="mailto:pranjal@praseom.xyz" class="cta-btn">Initiate Inquiries</a>
+        </section>
+
+        <h2 class="section-title">Core Innovation Architecture</h2>
+        <section class="architecture-grid">
+            <div class="card">
+                <h3>01 / Transduction</h3>
+                <p>High-selectivity microneedle skin patches optimized for continuous interstitial fluid (ISF) sampling without blood access.</p>
+            </div>
+            <div class="card">
+                <h3>02 / Mixed-Signal AFE</h3>
+                <p>Custom ultra-low-noise chopper-stabilized instrumentation architectures engineered to suppress baseband 1/f noise and maximize signal-to-noise ratios.</p>
+            </div>
+            <div class="card">
+                <h3>03 / Edge Compute</h3>
+                <p>Bare-metal low-power firmware stack designed for real-time trend analytics, adaptive stabilization, and deterministic execution profiles.</p>
+            </div>
+        </section>
+
+        <h2 class="section-title">Development Pipeline</h2>
+        <section class="pipeline">
+            <div class="timeline-item active">
+                <div class="timeline-meta">Months 1—3</div>
+                <div class="timeline-content">
+                    <h4>Phase 1: Benchtop Verification</h4>
+                    <p>Current stage. Development of the analytical electrochemical sensor model and hardware beaker testing of the core analog signal chain.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-meta">Months 4—8</div>
+                <div class="timeline-content">
+                    <h4>Phase 2: Silicon Design & Tape-Out</h4>
+                    <p>Schematic optimization and layout synthesis targeting the India Semiconductor Mission fabrication pipelines.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-meta">Months 9+</div>
+                <div class="timeline-content">
+                    <h4>Phase 3: In-Vitro Validation</h4>
+                    <p>Integration of physical sensor patches with local edge silicon nodes for real-world clinical data comparison loops.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div>&copy; 2026 Project Praseom. All rights reserved. // Designed in India</div>
+            <div>Inquiries: <a href="mailto:pranjal@praseom.xyz">pranjal@praseom.xyz</a></div>
+        </footer>
     </div>
 
 </body>
